@@ -7,42 +7,46 @@ basic acceptance testing
 with just 7 commands
 (& 5 asserts)
 
-Browser Commands: load, click, fill, submit, wait, switch_to, navigate
+Browser Commands: get, click, fill, submit, wait, switch_to, navigate
 Asserts: assert_text, assert_element, assert_value, assert_title, assert_url
 """
 
 import random
 import string
-import sys
 import time
 
-import click
-import yaml
-
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.common.exceptions import NoSuchElementException
+
+from .errors import DriverDoesNotExistError, GhostlyTestFailed
 
 
 def milli_now():
     return int(time.time() * 1000)
 
 
-class GhostlyTestFailed(Exception):
-    pass
-
-
 class Ghostly:
+    """
+    Lightweight wrapper and helper utilities around Selenium webdriver.
+    """
 
-    def __init__(self, browser):
-        browser = browser.lower()
-        if browser == 'firefox':
-            self.browser = webdriver.Firefox()
-        elif browser == 'chrome':
-            self.browser = webdriver.Chrome()
-        self.browser.maximize_window()
+    def __init__(self, driver, maximise_window=True):
+        """
+        :param driver: String name of driver, it's expected that it's an attribute
+                       on webdriver. IE. 'Chrome' or 'Firefox' are valid.
+        """
+
+        try:
+            self.driver = getattr(webdriver, driver)()
+            """:type : webdriver.Chrome"""
+        except AttributeError as e:
+            raise DriverDoesNotExistError("Driver '%s' does not exist." % driver)
+
+        if maximise_window:
+            self.driver.maximize_window()
 
     def end(self):
-        self.browser.quit()
+        self.driver.quit()
 
     def _get_element(self, selector, parent=None, wait=10):
         """
@@ -58,13 +62,13 @@ class Ghostly:
         wait = wait * 1000
         start = milli_now()
 
-        # disable the browser/selenium wait time so that we can use our own logic
-        self.browser.implicitly_wait(0)
+        # disable the driver/selenium wait time so that we can use our own logic
+        self.driver.implicitly_wait(0)
 
         element = None
         while milli_now() < start + wait:
             if not parent:
-                parent = self.browser
+                parent = self.driver
 
             try:
                 if selector.startswith('#'):
@@ -100,11 +104,11 @@ class Ghostly:
 
         raise NoSuchElementException('Could not find element matching {}'.format(selector))
 
-    def load(self, url):
+    def get(self, url):
         """
-        Load the provided URL in the web browser
+        Load the provided URL in the web driver
         """
-        self.browser.get(url)
+        return self.driver.get(url)
 
     def click(self, selector):
         """
@@ -123,7 +127,7 @@ class Ghostly:
         Fill out and submit a form
         """
         form = self.fill(selector, *contents)
-        form.submit()
+        return form.submit()
 
     def fill(self, selector, *contents):
         """
@@ -155,7 +159,7 @@ class Ghostly:
         """
         Switch to a new frame (useful for navigating between iFrames)
         """
-        self.browser.switch_to_frame(selector)
+        self.driver.switch_to.frame(selector)
 
     def navigate(self, navigation):
         """
@@ -165,7 +169,7 @@ class Ghostly:
         """
         if navigation not in ['forward', 'back']:
             raise AttributeError("An invalid option was given to the navigation command")
-        f = getattr(self.browser, navigation)
+        f = getattr(self.driver, navigation)
         f()
 
     def assert_text(self, text, selector='body'):
@@ -202,83 +206,11 @@ class Ghostly:
 
     def assert_title(self, value):
         self.wait(1)
-        if self.browser.title != value:
-            raise GhostlyTestFailed("title is {} not {}".format(self.browser.title, value))
+        if self.driver.title != value:
+            raise GhostlyTestFailed("title is {} not {}".format(self.driver.title, value))
 
     def assert_url(self, url):
         self.wait(1)
-        if self.browser.current_url != url:
-            raise GhostlyTestFailed("url is {} not {}".format(self.browser.current_url, url))
+        if self.driver.current_url != url:
+            raise GhostlyTestFailed("url is {} not {}".format(self.driver.current_url, url))
 
-
-def run_test(test, browser, verbose):
-    # we create a new Ghostly instance for each tests, keeps things nice and
-    # isolated / ensures there is a clear cache
-    g = Ghostly(browser)
-    try:
-        for step in test['test']:
-            # print step
-            for f, v in step.items():
-                func = getattr(g, f)
-                if type(v) == list:
-                    func(*v)
-                else:
-                    func(v)
-    # explicitly catch the possible error states and fail the test with an appropriate message
-    except NoSuchElementException as e:
-        fail(test['name'], "couldn't find element", e, verbose)
-        passed = False
-    except WebDriverException as e:
-        fail(test['name'], "webdriver failed", e, verbose)
-        passed = False
-    except GhostlyTestFailed as e:
-        fail(test['name'], e.message, e, verbose)
-        passed = False
-    else:
-        click.echo(click.style("✔", fg='green') + " " + test['name'])
-        passed = True
-    finally:
-        g.end()
-
-    return passed
-
-
-@click.command()
-@click.argument('ghostly_files', type=click.File('rb'), nargs=-1)
-@click.option('--browser', default='chrome', help='browser to use [chrome, firefox]')
-@click.option('--verbose', is_flag=True)
-def run_ghostly(ghostly_files, browser, verbose):
-    start = time.time()
-    tests = []
-    passed = []
-    failed = []
-
-    for f in ghostly_files:
-        test_yaml = yaml.load(f.read())
-        tests.extend(test_yaml)
-
-    plural = len(tests) != 1 and "s" or ""
-    click.echo('Running {} test{}...'.format(len(tests), plural))
-    for test in tests:
-        if run_test(test, browser, verbose):
-            passed.append(test)
-        else:
-            failed.append(test)
-
-    stop = time.time()
-
-    taken = float(stop - start)
-    click.echo("Ran {} test{} in {:.2f}s".format(len(tests), plural, taken))
-
-    if failed:
-        sys.exit(1)
-
-
-def fail(name, reason, exception=None, verbose=False):
-    click.echo(click.style("✘", fg='red') + " {} ({})".format(name, reason))
-    if verbose:
-        click.echo(exception)
-
-
-if __name__ == '__main__':
-    run_ghostly()

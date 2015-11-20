@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+"""
+    module.name
+    ~~~~~~~~~~~~~~~
+    Preamble...
+"""
+from __future__ import absolute_import, print_function, unicode_literals
+
+
+__all__ = ['GhostlyError', 'DriverDoesNotExistError', 'GhostlyTestFailed']
+
+
+class GhostlyError(Exception):
+    """
+    Ghostly error, which all Ghostly errors inherit.
+    """
+    pass
+
+
+class DriverDoesNotExistError(GhostlyError):
+    """
+    Raised when :py:meth:`Ghostly.__init__` can't load a specific driver.
+    """
+    pass
+
+
+class GhostlyTestFailed(GhostlyError):
+    pass
+
