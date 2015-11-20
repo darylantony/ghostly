@@ -132,7 +132,7 @@ class Ghostly:
         :param wait:
         :return:
         """
-        element = self.driver.find_element_by_xpath('//*[@id="refresh"]')
+        element = self.driver.find_element_by_xpath(xpath)
 
         ActionChains(self.driver)\
             .move_to_element(element)\

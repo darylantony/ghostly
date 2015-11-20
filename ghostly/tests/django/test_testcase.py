@@ -37,16 +37,11 @@ class GhostlyDjangoTestCaseTestCase(GhostlyDjangoTestCase):
         self.assertCurrentUrl('/test1/?title=Success')
         self.assertSelectorEqual('h1', 'Success')
 
+        # h2 is not yet visible
+        self.assertXpathEqual('//h2', '')
+
         # Click the link around the blue circle
         self.ghostly.xpath_click('//*[@id="popup"]')
 
         # Now check that Hello World is visible
         self.assertXpathEqual('//h2', 'Hello World')
-
-        # div = self.ghostly.driver.find_element_by_id('#hello-world')
-        #
-        # self.ghostly.wait(0.1)  # We must wait for PhantomJS
-        # self.assertEqual(self.ghostly.driver.current_url, '%s/test1/?title=Success' % self.live_server_url)
-        # self.ghostly.assert_text('Success', 'h1')
-
-
