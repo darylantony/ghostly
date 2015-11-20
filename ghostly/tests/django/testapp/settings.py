@@ -7,16 +7,19 @@
 from __future__ import absolute_import, print_function, unicode_literals
 import os
 
+from os.path import normpath, join
+
 DEBUG = True
 
 os.environ.setdefault('DJANGO_LIVE_TEST_SERVER_ADDRESS', 'localhost:8000-9000')
 
 INSTALLED_APPS = [
-    'django.contrib.auth',
+    # 'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.sessions',
-    'ghostly.tests.django.testapp'
+    'django.contrib.staticfiles',
+    'ghostly.tests.django.testapp',
 ]
 
 STATIC_URL = '/static/'
@@ -31,8 +34,11 @@ DATABASES = {
         'NAME': ':memory:',
     }
 }
+
 MIDDLEWARE_CLASSES = {}
+
 ROOT_URLCONF = 'ghostly.tests.django.testapp.urls'
+
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
     'DIRS': [
@@ -52,3 +58,22 @@ TEMPLATES = [{
         ]
     },
 }]
+
+# # STATIC FILE CONFIGURATION
+# # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+# STATIC_ROOT = normpath(join(SITE_ROOT, 'assets'))
+#
+# # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
+# STATIC_URL = '/static/'
+#
+# # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
+# STATICFILES_DIRS = (
+#     normpath(join(SITE_ROOT, 'static')),
+# )
+#
+# # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+# STATICFILES_FINDERS = (
+#     'django.contrib.staticfiles.finders.FileSystemFinder',
+#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+# )
+# # END STATIC FILE CONFIGURATION

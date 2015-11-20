@@ -17,6 +17,7 @@ import time
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver import ActionChains
 
 from .errors import DriverDoesNotExistError, GhostlyTestFailed
 
@@ -112,8 +113,9 @@ class Ghostly:
 
     def click(self, selector):
         """
-        Click on an element that's currently visble on the page. The element can be selected
-        with a range of selectors:
+        Click on an element that's currently visible on the page.
+
+        The element can be selected with a range of selectors:
             - .class_name
             - #element_id
             - element
@@ -121,6 +123,24 @@ class Ghostly:
         """
         element = self._get_element(selector)
         element.click()
+
+    def xpath_click(self, xpath, wait=0.1):
+        """
+        Click an element selected using xpath.
+
+        :param xpath: Xpath to the element to be clicked.
+        :param wait:
+        :return:
+        """
+        element = self.driver.find_element_by_xpath('//*[@id="refresh"]')
+
+        ActionChains(self.driver)\
+            .move_to_element(element)\
+            .click()\
+            .perform()
+
+        if wait:
+            self.wait(wait)
 
     def submit(self, selector, *contents):
         """

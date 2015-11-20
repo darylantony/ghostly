@@ -18,7 +18,7 @@ class GhostlyDjangoTestCase(StaticLiveServerTestCase):
 
     This class is mostly a light weight wrapper around Ghostly.
     """
-    driver = 'Chrome'
+    driver = 'PhantomJS'
 
     def setUp(self):
         super(GhostlyDjangoTestCase, self).setUp()
@@ -28,7 +28,7 @@ class GhostlyDjangoTestCase(StaticLiveServerTestCase):
         super(GhostlyDjangoTestCase, self).tearDown()
         self.ghostly.end()
 
-    def assertGetUrl(self, url):
+    def goto(self, url):
         """
         HTTP GET url and assert it's response code is in assert_statuses.
 
@@ -44,8 +44,43 @@ class GhostlyDjangoTestCase(StaticLiveServerTestCase):
 
         self.ghostly.driver.get(url)
 
+    def assertCurrentUrl(self, expected):
+        """
+        Assert the current URL is equal to expected.
+
+        :param expected: Expected URL, if relative the test servers URL is
+                         prepended.
+        """
+        if expected.startswith('/'):
+            # Append the server URL to the url
+            expected = self.live_server_url + expected
+
+        self.assertEqual(self.ghostly.driver.current_url, expected)
+
     def assertBrowserSubmit(self, selector, contents):
         self.ghostly.submit(selector, contents)
 
     def assertBrowserHasValue(self, selector, value):
         self.ghostly.assert_value(selector, value)
+
+    def assertXpathEqual(self, xpath, expected):
+        element = self.ghostly.driver.find_element_by_xpath(xpath)
+
+        self.assertEqual(
+            element.text,
+            expected,
+            "Expected xpath '%s' to be equal to '%s' not '%s'." % (
+                xpath,
+                expected,
+                element.text))
+
+    def assertSelectorEqual(self, selector, expected):
+        element = self.ghostly._get_element(selector)
+
+        self.assertEqual(
+            element.text,
+            expected,
+            "Expected selector '%s' to be equal to '%s' not '%s'." % (
+                selector,
+                expected,
+                element.text))

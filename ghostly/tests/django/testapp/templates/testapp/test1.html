@@ -3,9 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <title>Test1</title>
+  <script src="/static/zepto.min.js"></script>
+  <script>
+    $().ready(function() {
+      $('#popup').on('click', function(e) {
+        e.preventDefault();
+        $('#hello-world').show();
+      });
+      $('#close').on('click', function(e) {
+        e.preventDefault();
+        $('#hello-world').hide();
+      });
+    });
+  </script>
 </head>
 <body>
-<h1>Test1</h1>
+<h1>{{ title }}</h1>
 <p>Here is the test.</p>
+<svg height="100" width="200" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <a xlink:href="{% url 'test1' %}?title=Success" id="refresh">
+    <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+  </a>
+  <a xlink:href="#" id="popup">
+    <circle cx="150" cy="50" r="40" stroke="black" stroke-width="3" fill="blue" />
+  </a>
+  Sorry, your browser does not support inline SVG.
+</svg>
+<div id="hello-world" style="display: none;">
+  <h2>Hello World</h2>
+  <p>I shouldn't be visible until you click the blue button.</p>
+  <a href="#" id="close">X Close</a>
+</div>
 </body>
 </html>
