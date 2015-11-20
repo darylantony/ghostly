@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Lightweight wrapper and helper utilities around Selenium Webdriver."""
+"""Lightweight API around Selenium Webdriver for end to end testing with Django."""
 # :copyright: (c) 2015 Common Code,
 #                 All rights reserved.
 # :license:   MIT License, see LICENSE for more details.
