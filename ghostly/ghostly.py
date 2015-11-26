@@ -124,22 +124,29 @@ class Ghostly:
         element = self._get_element(selector)
         element.click()
 
-    def xpath_click(self, xpath, wait=0.1):
+    def xpath_click(self, xpath, wait=0.1, move_to=True):
         """
         Click an element selected using xpath.
 
         :param xpath: Xpath to the element to be clicked.
-        :param wait:
-        :return:
+        :param wait: Wait after the click - set to None for no wait.
+        :param move_to: If True (default) then an ActionChains is created and
+                        move_to_element called - this approach works well for
+                        elements that respond to clicks such as a/span/div tags.
+                        If False, click is called on the element - this approach
+                        works well for choosing items in a select tag.
         """
         element = self.driver.find_element_by_xpath(xpath)
 
-        ActionChains(self.driver)\
-            .move_to_element(element)\
-            .click()\
-            .perform()
+        if move_to:
+            ActionChains(self.driver)\
+                .move_to_element(element)\
+                .click()\
+                .perform()
+        else:
+            element.click()
 
-        if wait:
+        if wait is not None:
             self.wait(wait)
 
     def submit(self, selector, *contents):
