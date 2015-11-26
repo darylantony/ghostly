@@ -1,13 +1,16 @@
+=======
 Ghostly
 =======
 
 Lightweight API around Selenium Webdriver for end to end testing with Django.
 
+This package is alpha, the API will most likely change!
+
 Usage
------
+=====
 
 GhostlyDjangoTestCase
-`````````````````````
+---------------------
 
 ``GhostlyDjangoTestCase`` inherits StaticLiveServerTestCase_ and thus fires up
 a WSGI server that handles requests.
@@ -30,7 +33,7 @@ the source, you can do the following;
 
 
 Working with SVG
-~~~~~~~~~~~~~~~~
+----------------
 
 To traverse SVG with Selenium web driver you must use xpath.
 
