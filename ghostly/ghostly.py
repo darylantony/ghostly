@@ -9,9 +9,12 @@
 from __future__ import absolute_import, print_function, unicode_literals
 import time
 
+import six
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, \
+    StaleElementReferenceException
 from selenium.webdriver import ActionChains
+from selenium.webdriver.remote.webelement import WebElement
 
 from .errors import DriverDoesNotExistError, GhostlyTestFailed, \
     GhostlyTimeoutError
@@ -50,7 +53,8 @@ class Ghostly:
         """
         Click an element selected using xpath.
 
-        :param xpath: The xpath locator of the element to be clicked.
+        :param xpath: The xpath locator of the element to be clicked or an
+                      WebElement
         :param wait: Wait after the click - set to None for no wait.
         :param move_to: If True (default) then an ActionChains is created and
                         move_to_element called - this approach works well for
@@ -58,7 +62,10 @@ class Ghostly:
                         If False, click is called on the element - this approach
                         works well for choosing items in a select tag.
         """
-        element = self.xpath(xpath)
+        if isinstance(xpath, WebElement):
+            element = xpath
+        else:
+            element = self.xpath(xpath)
 
         if move_to:
             ActionChains(self.driver)\
@@ -71,7 +78,10 @@ class Ghostly:
         if wait is not None:
             self.wait(wait)
 
-    def xpath_wait(self, xpath, visible=True, timeout=5, sleep=0.25):
+        return element
+
+    def xpath_wait(self, xpath, visible=True, timeout=5, sleep=0.25,
+                   click=False, click_move_to=True, click_wait=0.1):
         """
         Wait for timeout seconds for xpath to exist and optionally be visible.
 
@@ -79,8 +89,18 @@ class Ghostly:
         :param visible: If True, also wait for the element to become visible.
         :param timeout: Timeout in seconds before GhostlyTimeoutError is raised.
         :param sleep: How long to sleep for between each check to see if
+        :param click: If True, then :py:meth:`.Ghostly.xpath_click` is called
+                      upon completion.
+        :param click_move_to: Passed onto :py:meth:`.Ghostly.xpath_click` if click
+                              is True.
+        :param click_wait: Passed onto :py:meth:`.Ghostly.xpath_click` if click
+                           is True.
         :return: selenium.webdriver.remote.webelement.WebElement
         """
+        if not visible and click:
+            raise NotImplementedError("An element must be visible in order to "
+                                      "click it.")
+
         start = current = time.time()
         stop = start + timeout
         attempts = 0
@@ -108,16 +128,24 @@ class Ghostly:
         # Wait till it's visible
         while time.time() < stop:
             attempts += 1
-            if element.is_displayed():
-                return element
-            else:
-                # The element isn't displayed, wait
+            try:
+                if element.is_enabled() and element.is_displayed():
+                    break
+                else:
+                    # The element isn't displayed, wait
+                    self.wait(sleep)
+            except StaleElementReferenceException:
                 self.wait(sleep)
         else:
             raise GhostlyTimeoutError(
                 "Element selected via xpath '%s' but is not yet visible within %s seconds - attempted %s "
                 "times." % (xpath, timeout, attempts)
             )
+
+        if not click:
+            return element
+
+        return self.xpath_click(element, wait=click_wait, move_to=click_move_to)
 
     def xpath(self, xpath):
         """
