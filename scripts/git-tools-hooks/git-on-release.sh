@@ -17,7 +17,7 @@ PY_VERSION=`echo $VERSION | sed -e 's/\./, /g'`
 sed --in-place -e "s/VERSION = version_info_t(.*)/VERSION = version_info_t($PY_VERSION, '', '')/g" $INIT_PATH
 
 # Ensure we haven't caused some kind of error
-python $INIT_PATH
+python -m py_compile $INIT_PATH
 
 # Check the last commands return code
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
