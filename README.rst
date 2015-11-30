@@ -2,17 +2,29 @@
 Ghostly
 =======
 
-Lightweight API around Selenium Webdriver for end to end testing with Django.
+Lightweight API around Selenium Webdriver and helpers for end to end testing
+with Django.
 
 This package is alpha, the API will most likely change!
 
 Usage
 =====
 
+You can use use this package outside of Django however it has limited use.
+
+Essentially there are two components, as follows;
+
+- ``Ghostly`` - A lightweight wrapper and helper methods for Selenium
+  Webdriver. Presently it provides a handful of methods that utilise xpath to
+  deal with a page, such as ``xpath``, ``xpath_wait`` et al.
+- ``GhostlyDjangoTestCase`` - A lightweight test case that extends
+  `StaticLiveServerTestCase`_ and sets up an instance of ``Ghostly``. It
+  provides methods such as ``assertCurrentUrl``, ``assertXpathEqual`` et al.
+
 GhostlyDjangoTestCase
 ---------------------
 
-``GhostlyDjangoTestCase`` inherits StaticLiveServerTestCase_ and thus fires up
+``GhostlyDjangoTestCase`` inherits `StaticLiveServerTestCase`_ and thus fires up
 a WSGI server that handles requests.
 
 Given you have a named URL ``home`` with a ``<h1>Hello World</h1>`` visible in
@@ -26,7 +38,7 @@ the source, you can do the following;
             self.goto(reverse('home'))
 
             # Assert that an element is equal to something
-            self.assertSelectorEqual('h1', 'Hello World')
+            self.assertXpathEqual('//h1', 'Hello World')
 
             # Assert the current url, relative or absolute
             self.assertCurrentUrl('/home')
@@ -51,6 +63,20 @@ To traverse SVG with Selenium web driver you must use xpath.
             self.assertXpathEqual('//h2', 'Hello World')
 
 
+History
+=======
+
+This package started out as a simple way to construct browser tests using YAML,
+written by Brenton Cleeland.
+
+The focus of this fork is to allow the developer to write programmatic unit
+tests in the style of `unittest`_.
+
+Currently this fork does not contain any of the CSS selector style methods that
+were originally available as the focus has been on xpath only support until a
+more robust CSS selector toolkit can be provided.
+
+
 License
 =======
 
@@ -61,7 +87,8 @@ file in the top distribution directory for the full license text.
 Author
 ======
 
-- Brenton Cleeland <brenton@commoncode.com>
 - Alex Hayes <alex@commoncode.com>
+- Brenton Cleeland <brenton@commoncode.com>
 
 .. _StaticLiveServerTestCase: https://docs.djangoproject.com/en/1.8/ref/contrib/staticfiles/#django.contrib.staticfiles.testing.StaticLiveServerTestCase
+.. _unittest: https://docs.python.org/2/library/unittest.html

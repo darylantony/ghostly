@@ -14,9 +14,7 @@ DEBUG = True
 os.environ.setdefault('DJANGO_LIVE_TEST_SERVER_ADDRESS', 'localhost:8000-9000')
 
 INSTALLED_APPS = [
-    # 'django.contrib.auth',
     'django.contrib.contenttypes',
-    # 'django.contrib.admin',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'ghostly.tests.django.testapp',

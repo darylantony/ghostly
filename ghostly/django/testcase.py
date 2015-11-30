@@ -7,8 +7,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.test.testcases import TransactionTestCase
-from selenium.webdriver.remote.command import Command
 
 from ghostly import Ghostly
 
@@ -33,7 +31,7 @@ class GhostlyDjangoTestCase(StaticLiveServerTestCase):
 
     def goto(self, url):
         """
-        HTTP GET url and assert it's response code is in assert_statuses.
+        Helper method to perform a HTTP GET with support for relative URLs.
 
         :param url: The URL to retrieve, if relative the test servers URL is
                     prepended.
@@ -60,11 +58,8 @@ class GhostlyDjangoTestCase(StaticLiveServerTestCase):
 
         self.assertEqual(self.ghostly.driver.current_url, expected)
 
-    def assertBrowserHasValue(self, selector, value):
-        self.ghostly.assert_value(selector, value)
-
     def assertXpathEqual(self, xpath, expected):
-        element = self.ghostly.driver.find_element_by_xpath(xpath)
+        element = self.ghostly.xpath(xpath)
 
         self.assertEqual(
             element.text,
@@ -74,13 +69,13 @@ class GhostlyDjangoTestCase(StaticLiveServerTestCase):
                 expected,
                 element.text))
 
-    def assertSelectorEqual(self, selector, expected):
-        element = self.ghostly._get_element(selector)
+    def assertXpathVisible(self, xpath):
+        element = self.ghostly.xpath(xpath)
+        self.assertTrue(element.is_displayed(),
+                        "Expected xpath '%s' to be visible." % xpath)
 
-        self.assertEqual(
-            element.text,
-            expected,
-            "Expected selector '%s' to be equal to '%s' not '%s'." % (
-                selector,
-                expected,
-                element.text))
+    def assertXpathNotVisible(self, xpath):
+        element = self.ghostly.xpath(xpath)
+        self.assertFalse(element.is_displayed(),
+                        "Expected xpath '%s' to not be visible." % xpath)
+

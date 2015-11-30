@@ -7,82 +7,53 @@
 """
 from __future__ import absolute_import, print_function, unicode_literals
 
-import unittest
-
 from django.core.urlresolvers import reverse
-from django.utils import six
-from selenium.webdriver import ActionChains
-from selenium.webdriver.remote.webelement import WebElement
 
 from ghostly.django.testcase import GhostlyDjangoTestCase
-from ghostly.errors import GhostlyTimeoutError
 
 
 class GhostlyDjangoTestCaseTestCase(GhostlyDjangoTestCase):
+    """
+    Tests that test the :py:class:`.GhostlyDjangoTestCase`
+
+    (yes, a test case for a test case)
+
+    Mostly these tests rely on the functionality provided by
+    :py:class:`.Ghostly`, thus, if :py:class:`.GhostlyTestCase` is failing then
+    it's highly unlikely anything in this test case will pass. The two could
+    potentially be isolated at some point but it's not a high priority at this
+    point.
+    """
     #driver = 'Chrome'
 
-    def test_h1(self):
+    def test_assertXpathEqual(self):
+        """
+        Test :py:meth:`.GhostlyDjangoTestCase.assertXpathEqual`.
+        """
         self.goto(reverse('test1'))
+        self.assertXpathEqual('//h1', 'Test1')
 
-    def test_svg(self):
+    def test_assertXpathVisible(self):
         self.goto(reverse('test1'))
-
-        # Check the circle exists
-        circle = self.ghostly.driver.find_element_by_xpath('//*[@id="refresh"]/*[name()="circle"]')
-        self.assertEqual(circle.get_attribute('cx'), six.text_type('50'))
-
-        # Click the link around the red circle
-        self.ghostly.xpath_click('//*[@id="refresh"]')
-
-        # Test the click happened
-        self.assertCurrentUrl('/test1/?title=Success')
-        self.assertSelectorEqual('h1', 'Success')
-
-        # h2 is not yet visible
-        self.assertXpathEqual('//h2', '')
-
-        # Click the link around the blue circle
+        self.assertXpathVisible('//h1')
         self.ghostly.xpath_click('//*[@id="hello-world-toggle"]')
+        self.assertXpathVisible('//*[@id="hello-world"]')
 
-        # Now check that Hello World is visible
-        self.assertXpathEqual('//h2', 'Hello World')
+    def test_assertCurrentUrl(self):
+        url = reverse('test1')
+        # Bypass our .goto method
+        self.ghostly.driver.get(self.live_server_url + url)
+        self.assertCurrentUrl(url)
+        self.assertCurrentUrl(self.live_server_url + url)
 
-    def test_xpath_wait_with_visibility(self):
-        """
-        Test :py:meth:`.Ghostly.xpath_wait`
-        """
-        self.goto(reverse('test1'))
-        self.ghostly.xpath_click('//*[@id="hello-world-delayed-toggle"]')
+    def test_goto(self):
+        url = reverse('test1')
+        self.goto(url)
+        # Requires that assertCurrentUrl is working...
+        self.assertCurrentUrl(url)
 
-        actual = self.ghostly.xpath_wait('//*[@id="hello-world"]')
 
-        self.assertIsInstance(actual, WebElement)
 
-    def test_xpath_wait_disregard_visibility(self):
-        """
-        Test :py:meth:`.Ghostly.xpath_wait` disregarding the visibility of the
-        element.
-        """
-        self.goto(reverse('test1') + '?delay=10')
-        self.ghostly.xpath_click('//*[@id="hello-world-delayed-toggle"]')
-
-        actual = self.ghostly.xpath_wait('//*[@id="hello-world"]',
-                                         visible=False,
-                                         timeout=0.05)
-
-        self.assertIsInstance(actual, WebElement)
-
-    def test_xpath_wait_raises(self):
-        """
-        Test :py:meth:`.Ghostly.xpath_wait` raises if it reaches a timeout
-        """
-        self.goto(reverse('test1') + '?delay=10')
-        self.ghostly.xpath_click('//*[@id="hello-world-delayed-toggle"]')
-
-        self.assertRaises(GhostlyTimeoutError,
-                          self.ghostly.xpath_wait,
-                          '//*[@id="hello-world"]',
-                          timeout=0.25)
 
 
 
