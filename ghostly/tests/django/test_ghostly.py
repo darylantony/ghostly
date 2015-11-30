@@ -86,3 +86,10 @@ class GhostlyTestCase(GhostlyDjangoTestCase):
 
         # Now check that Hello World is visible
         self.assertXpathEqual('//h2', 'Hello World')
+
+    def test_form_submit(self):
+        self.goto(reverse('test1'))
+
+        expected = 'Foo bar'
+        self.ghostly.form_submit('//form', title=expected)
+        self.assertXpathEqual('//h1', expected)

@@ -138,3 +138,29 @@ class Ghostly:
         if type(seconds) == str:
             seconds = int(seconds)
         time.sleep(seconds)
+
+    def form_submit(self, xpath, **data):
+        """
+        Submit a form optionally setting (simple) data on the form.
+
+        :param xpath: The xpath locator of the form.
+        :param data: A dict of data to supply to :py:meth:`.Ghostly.form_fill`
+        :return: selenium.webdriver.remote.webelement.WebElement
+        """
+        form = self.form_fill(xpath, **data)
+        return form.submit()
+
+    def form_fill(self, xpath, **data):
+        """
+        Fill a simple form with data.
+
+        :param xpath: The xpath locator of the form.
+        :param data: A dict of data on the form to fill. The key of each item
+                     should equal the name of an input field.
+        :return: selenium.webdriver.remote.webelement.WebElement
+        """
+        form = self.xpath(xpath)
+        for field, value in data.items():
+            self.xpath(xpath + '//*[@name="' + field + '"]').send_keys(value)
+
+        return form
