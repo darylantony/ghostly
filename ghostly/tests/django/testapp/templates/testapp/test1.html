@@ -6,9 +6,15 @@
   <script src="/static/zepto.min.js"></script>
   <script>
     $().ready(function() {
-      $('#popup').on('click', function(e) {
+      $('#hello-world-toggle').on('click', function(e) {
         e.preventDefault();
         $('#hello-world').show();
+      });
+      $('#hello-world-delayed-toggle').on('click', function(e) {
+        e.preventDefault();
+        setTimeout(function() {
+          $('#hello-world').show();
+        }, {{ delay }});
       });
       $('#close').on('click', function(e) {
         e.preventDefault();
@@ -20,18 +26,30 @@
 <body>
 <h1>{{ title }}</h1>
 <p>Here is the test.</p>
-<svg height="100" width="200" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <a xlink:href="{% url 'test1' %}?title=Success" id="refresh">
-    <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
-  </a>
-  <a xlink:href="#" id="popup">
-    <circle cx="150" cy="50" r="40" stroke="black" stroke-width="3" fill="blue" />
-  </a>
+<svg height="100" width="300" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <a xlink:href="{% url 'test1' %}?title=Success" id="refresh">
+      <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+      <text x="20" y="55" fill="black">Refresh</text>
+    </a>
+  </g>
+  <g>
+    <a xlink:href="#" id="hello-world-toggle">
+      <circle cx="150" cy="50" r="40" stroke="black" stroke-width="3" fill="blue" />
+      <text x="135" y="55" fill="white">Div</text>
+    </a>
+  </g>
+  <g>
+    <a xlink:href="#" id="hello-world-delayed-toggle">
+      <circle cx="250" cy="50" r="40" stroke="black" stroke-width="3" fill="yellow"/>
+      <text x="220" y="55" fill="black">Delayed</text>
+    </a>
+  </g>
   Sorry, your browser does not support inline SVG.
 </svg>
 <div id="hello-world" style="display: none;">
   <h2>Hello World</h2>
-  <p>I shouldn't be visible until you click the blue button.</p>
+  <p>I shouldn't be visible until you click the blue or yellow buttons.</p>
   <a href="#" id="close">X Close</a>
 </div>
 </body>

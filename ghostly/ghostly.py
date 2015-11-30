@@ -16,10 +16,12 @@ import string
 import time
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, \
+    ElementNotVisibleException
 from selenium.webdriver import ActionChains
 
-from .errors import DriverDoesNotExistError, GhostlyTestFailed
+from .errors import DriverDoesNotExistError, GhostlyTestFailed, \
+    GhostlyTimeoutError
 
 
 def milli_now():
@@ -128,7 +130,7 @@ class Ghostly:
         """
         Click an element selected using xpath.
 
-        :param xpath: Xpath to the element to be clicked.
+        :param xpath: The xpath locator of the element to be clicked.
         :param wait: Wait after the click - set to None for no wait.
         :param move_to: If True (default) then an ActionChains is created and
                         move_to_element called - this approach works well for
@@ -136,7 +138,7 @@ class Ghostly:
                         If False, click is called on the element - this approach
                         works well for choosing items in a select tag.
         """
-        element = self.driver.find_element_by_xpath(xpath)
+        element = self.xpath(xpath)
 
         if move_to:
             ActionChains(self.driver)\
@@ -148,6 +150,66 @@ class Ghostly:
 
         if wait is not None:
             self.wait(wait)
+
+    def xpath_wait(self, xpath, visible=True, timeout=5, sleep=0.25):
+        """
+        Wait for timeout seconds for xpath to exist and optionally be visible.
+
+        :param xpath: The xpath locator of the element to find.
+        :param visible: If True, also wait for the element to become visible.
+        :param timeout: Timeout in seconds before GhostlyTimeoutError is raised.
+        :param sleep: How long to sleep for between each check to see if
+        :return: selenium.webdriver.remote.webelement.WebElement
+        """
+        start = current = time.time()
+        stop = start + timeout
+        attempts = 0
+
+        # Initially wait till the element can be found
+        while time.time() < stop:
+            attempts += 1
+            # We haven't yet found the element
+            try:
+                # Attempt to select the element.
+                element = self.xpath(xpath)
+                break
+            except NoSuchElementException:
+                # The element isn't available yet, so wait.
+                self.wait(sleep)
+        else:
+            raise GhostlyTimeoutError(
+                "Could not select xpath '%s' within %s seconds - attempted %s "
+                "times." % (xpath, timeout, attempts)
+            )
+
+        if not visible:
+            return element
+
+        # Wait till it's visible
+        while time.time() < stop:
+            attempts += 1
+            if element.is_displayed():
+                return element
+            else:
+                # The element isn't displayed, wait
+                self.wait(sleep)
+        else:
+            raise GhostlyTimeoutError(
+                "Element selected via xpath '%s' but is not yet visible within %s seconds - attempted %s "
+                "times." % (xpath, timeout, attempts)
+            )
+
+    def xpath(self, xpath):
+        """
+        Finds an element by xpath.
+
+        This simply passes through to
+        :py:class:`.WebDriver.find_element_by_xpath`.
+
+        :param xpath: The xpath locator of the element to find.
+        :return: selenium.webdriver.remote.webelement.WebElement
+        """
+        return self.driver.find_element_by_xpath(xpath)
 
     def submit(self, selector, *contents):
         """

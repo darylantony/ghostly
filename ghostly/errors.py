@@ -27,3 +27,9 @@ class DriverDoesNotExistError(GhostlyError):
 class GhostlyTestFailed(GhostlyError):
     pass
 
+
+class GhostlyTimeoutError(GhostlyError):
+    """
+    Raised when a timeout occurs within Ghostly.
+    """
+    pass
