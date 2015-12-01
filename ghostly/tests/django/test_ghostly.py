@@ -62,6 +62,19 @@ class GhostlyTestCase(GhostlyDjangoTestCase):
                           '//*[@id="hello-world"]',
                           timeout=0.25)
 
+    def test_xpath_wait_with_click(self):
+        """
+        Test :py:meth:`.Ghostly.xpath_wait` call through to xpath click.
+        """
+        self.goto(reverse('test1') + '?delay=1')
+        self.ghostly.xpath_click('//*[@id="hello-world-delayed-toggle"]')
+
+        element = self.ghostly.xpath_wait('//*[@id="close"]', click=True)
+
+        self.assertFalse(
+            element.is_displayed(),
+            "Expected element with id '#close' to not be displayed.")
+
     def test_svg(self):
         """
         Test clicking within SVG.
