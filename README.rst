@@ -62,6 +62,9 @@ To traverse SVG with Selenium web driver you must use xpath.
             # Assert that an Xpath is equal to something
             self.assertXpathEqual('//h2', 'Hello World')
 
+            # Wait for xpath to exist
+            self.ghostly.xpath_wait('//div[@id="something"]')
+
 
 History
 =======
