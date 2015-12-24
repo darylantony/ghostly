@@ -7,8 +7,64 @@ with Django.
 
 This package is alpha, the API will most likely change!
 
+It supports Django 1.6-1.8 for Python versions 2.7, 3.3, 3.4, 3.5 and pypy (where
+the `Django version supports said Python version <https://docs.djangoproject.com/en/1.9/faq/install/#what-python-version-can-i-use-with-django>`_).
+
+.. image:: https://travis-ci.org/alexhayes/ghostly.png?branch=master
+    :target: https://travis-ci.org/alexhayes/ghostly
+    :alt: Build Status
+
+.. image:: https://landscape.io/github/alexhayes/ghostly/master/landscape.png
+    :target: https://landscape.io/github/alexhayes/ghostly/
+    :alt: Code Health
+
+.. image:: https://codecov.io/github/alexhayes/ghostly/coverage.svg?branch=master
+    :target: https://codecov.io/github/alexhayes/ghostly?branch=master
+    :alt: Code Coverage
+
+.. image:: https://readthedocs.org/projects/ghostly/badge/
+    :target: http://ghostly.readthedocs.org/en/latest/
+    :alt: Documentation Status
+
+.. image:: https://img.shields.io/pypi/v/ghostly.svg
+    :target: https://pypi.python.org/pypi/ghostly
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/pyversions/ghostly.svg
+    :target: https://pypi.python.org/pypi/ghostly/
+    :alt: Supported Python versions
+
+.. image:: https://img.shields.io/pypi/dd/ghostly.svg
+    :target: https://pypi.python.org/pypi/ghostly/
+    :alt: Downloads
+
+Docs
+----
+
+Available at `ghostly.readthedocs.org`_
+
+
+Installation
+------------
+
+You can install ghostly either via the Python Package Index (PyPI) or from
+github.
+
+To install using pip;
+
+.. code-block:: bash
+
+    pip install ghostly
+
+From github;
+
+.. code-block:: bash
+
+    $ pip install git+https://github.com/alexhayes/ghostly.git
+
+
 Usage
-=====
+-----
 
 You can use use this package outside of Django however it has limited use.
 
@@ -67,7 +123,7 @@ To traverse SVG with Selenium web driver you must use xpath.
 
 
 History
-=======
+-------
 
 This package started out as a simple way to construct browser tests using YAML,
 written by Brenton Cleeland.
@@ -81,14 +137,14 @@ more robust CSS selector toolkit can be provided.
 
 
 License
-=======
+-------
 
 This software is licensed under the `MIT License`. See the ``LICENSE``
 file in the top distribution directory for the full license text.
 
 
 Author
-======
+------
 
 - Alex Hayes <alex@commoncode.com>
 - Brenton Cleeland <brenton@commoncode.com>

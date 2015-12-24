@@ -9,6 +9,6 @@ from django.conf.urls import patterns, url
 
 from ghostly.tests.django.testapp.views import ParameterisedTitleView
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^test1/$', ParameterisedTitleView.as_view(template_name='testapp/test1.html'), name='test1'),
-)
+]

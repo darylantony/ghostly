@@ -1,0 +1,29 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "pypy"
+env:
+  - TOXENV=py27-django16
+  - TOXENV=py27-django17
+  - TOXENV=py27-django18
+  - TOXENV=py33-django16
+  - TOXENV=py33-django17
+  - TOXENV=py33-django18
+  - TOXENV=py34-django16
+  - TOXENV=py34-django17
+  - TOXENV=py34-django18
+  - TOXENV=py35-django18
+  - TOXENV=pypy-django16
+  - TOXENV=pypy-django17
+  - TOXENV=pypy-django18
+install:
+  - pip install tox
+  - pip install codecov
+script:
+  - tox
+after_success:
+  - codecov
+
