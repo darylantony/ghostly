@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-    module.name
-    ~~~~~~~~~~~~~~~
-    Preamble...
+    ghostly.django.testcase
+    ~~~~~~~~~~~~~~~~~~~~~~~
+
+    Module containing GhostlyDjangoTestCase.
+
 """
 from __future__ import absolute_import, print_function, unicode_literals
 
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+try:
+    from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+except ImportError:
+    # Django < 1.7
+    from django.test import LiveServerTestCase as StaticLiveServerTestCase
 
 from ghostly import Ghostly
 

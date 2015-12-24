@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-    module.name
-    ~~~~~~~~~~~~~~~
-    Preamble...
+    ghostly.errors
+    ~~~~~~~~~~~~~~
+
+    All local errors that ghostly raises.
+
 """
 from __future__ import absolute_import, print_function, unicode_literals
 
