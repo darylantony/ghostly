@@ -1,3 +1,8 @@
+# Release 0.2.3 - Thu Dec 24 12:31:55 AEDT 2015
+
+- Fixed .travis.yml
+- Fixed link to ghostly on rtd
+
 # Release 0.2.2 - Thu Dec 24 11:47:57 AEDT 2015
 
 - Added support for Django 1.6.
