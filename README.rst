@@ -151,3 +151,4 @@ Author
 
 .. _StaticLiveServerTestCase: https://docs.djangoproject.com/en/1.8/ref/contrib/staticfiles/#django.contrib.staticfiles.testing.StaticLiveServerTestCase
 .. _unittest: https://docs.python.org/2/library/unittest.html
+.. _ghostly.readthedocs.org: http://ghostly.readthedocs.org/en/latest/
