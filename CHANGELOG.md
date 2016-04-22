@@ -1,3 +1,8 @@
+# Release 0.2.4 - Fri Apr 22 10:46:30 AEST 2016
+
+- Fixed troves
+- GhostlyDjangoTestCase: Ensure Ghostly stops even if setUp fails
+
 # Release 0.2.3 - Thu Dec 24 12:31:55 AEDT 2015
 
 - Fixed .travis.yml
