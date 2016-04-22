@@ -29,11 +29,8 @@ class GhostlyDjangoTestCase(StaticLiveServerTestCase):
     def setUp(self):
         super(GhostlyDjangoTestCase, self).setUp()
         self.ghostly = Ghostly(self.driver, maximise_window=self.maximise_window)
+        self.addCleanup(self.ghostly.end)
         #self.live_server_url = 'localhost:8000'
-
-    def tearDown(self):
-        super(GhostlyDjangoTestCase, self).tearDown()
-        self.ghostly.end()
 
     def goto(self, url):
         """
