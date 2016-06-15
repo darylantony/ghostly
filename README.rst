@@ -146,8 +146,8 @@ file in the top distribution directory for the full license text.
 Author
 ------
 
-- Alex Hayes <alex@commoncode.com>
-- Brenton Cleeland <brenton@commoncode.com>
+- Alex Hayes <alex@commoncode.io>
+- Brenton Cleeland <brenton@commoncode.io>
 
 .. _StaticLiveServerTestCase: https://docs.djangoproject.com/en/1.8/ref/contrib/staticfiles/#django.contrib.staticfiles.testing.StaticLiveServerTestCase
 .. _unittest: https://docs.python.org/2/library/unittest.html
